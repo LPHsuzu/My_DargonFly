@@ -2,6 +2,7 @@
 #include "structconfig.h"
 #include "usart.h"
 #include "led.h"
+#include "power.h"
 
 uint8_t DataID; // 数据包ID
 RC_TYPE RC_Control;
@@ -20,7 +21,7 @@ void Button_Command(uint8_t Button);
  */
 void Remote_Data_ReceiveAnalysis(void)
 {
-    WIFI_ControlFlag = 0;        // 遥控器遥控时失能APP遥控
+    WiFi_Controlflag = 0;        // 遥控器遥控时失能APP遥控
     if (NRF_RX_DATA[11] != 0xA5) // 验证校验码是否为0xA5
     {
         return;
@@ -62,13 +63,13 @@ void Button_Command(uint8_t Button)
         if (Button & 0x01) // 飞机解锁
         {
             Airplane_Enable = 1;
-            RGB_LED_FLY();
-            RGB_LED_OFF();
+            RGB_LED_Fly();
+            RGB_LED_Off();
         }
         else // 飞机上锁
         {
             Airplane_Enable = 0;
-            RGB_LED_OFF();
+            RGB_LED_Off();
         }
     }
     /*遥控器K2按键*/
@@ -76,15 +77,15 @@ void Button_Command(uint8_t Button)
     {
         if (Button & 0x02) // 打开WIFI
         {
-            WIFI_Switch(ENABLE);
-            Run_Flag = 0;
+            WiFi_Switch(ENABLE);
+            Run_flag = 0;
             SENSER_FLAG_SET(WiFi_ONOFF); // 开启WIFI
             WIFI_LEDFlag = 1;
         }
         else // 关闭WIFI
         {
-            WIFI_Switch(DISABLE);
-            Run_Flag = 0;
+            WiFi_Switch(DISABLE);
+            Run_flag = 0;
             SENSER_FLAG_RESET(WiFi_ONOFF); // 关闭WIFI
             WIFI_LEDFlag = 2;
         }
@@ -123,7 +124,7 @@ void WIFI_Data_ReceiveAnalysis(uint8_t *buff, uint8_t cnt)
 {
     uint8_t colour[3];
     uint8_t led;
-    WIFI_ControlFlag = 1; // WIFI控制标志位
+    WiFi_Controlflag = 1; // WIFI控制标志位
 
     if (buff[0] == 0xAA && buff[1] == 0xBB) // 判断帧头
     {
@@ -161,13 +162,13 @@ void WIFI_Data_ReceiveAnalysis(uint8_t *buff, uint8_t cnt)
                     /*飞机解锁*/
                 case 0x05:
                     Airplane_Enable = 1;
-                    RGB_LED_FLY();
+                    RGB_LED_Fly();
                     break;
                     /*飞机上锁*/
                 case 0x06:
                     Airplane_Enable = 0;
-                    Run_Flag = 1;
-                    RGB_LED_OFF();
+                    Run_flag = 1;
+                    RGB_LED_Off();
                     break;
                     /*一键起飞*/
                 case 0x07:
@@ -226,7 +227,7 @@ void NRF_SingalCheck(void)
 {
     static uint8_t PreDataID = 250;
 
-    if (!WIFI_ControlFlag)
+    if (!WiFi_Controlflag)
     {
         if (Airplane_Enable && DataID == PreDataID) // 飞机与遥控器断开连接
         {
@@ -237,7 +238,7 @@ void NRF_SingalCheck(void)
         {
             if (Airplane_Enable && !BATT_LEDFlag) // 飞机遥控连接正常
             {
-                RGB_LED_FLY(); // 飞行指示灯
+                RGB_LED_Fly(); // 飞行指示灯
             }
             PreDataID = DataID;
         }

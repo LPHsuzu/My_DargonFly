@@ -21,7 +21,6 @@ void MPU6500_CalOff(void);
 void MPU6500_CalOff_Acc(void);
 void MPU6500_CalOff_Gyro(void);
 
-uint8_t MPU6500_OffSet(INT16_XYZ value, INT16_XYZ *offset, uint16_t sensivity)£»
 void MPU6500_DataProcess(void);
 
 #endif

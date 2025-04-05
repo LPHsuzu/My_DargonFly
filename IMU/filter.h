@@ -1,6 +1,7 @@
 #ifndef __FILTER_H
 #define __FILTER_H
 #include "stm32f4xx.h"
+#include "structconfig.h"
 
 void SortAver_Filter(float value, float *filter, uint8_t n);
 void SortAver_Filter1(float value, float *filter, uint8_t n);

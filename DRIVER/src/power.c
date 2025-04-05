@@ -128,14 +128,14 @@ void LowVoltage_Alarm(void)
         {
             if (cnt++ > 10)
             {
-                Run_Flag = 0;
+                Run_flag = 0;
                 cnt = 0;
                 BATT_LEDFlag = 1;
             }
         }
         else
         {
-            Run_Flag = 1;
+            Run_flag = 1;
             cnt = 0;
             BATT_LEDFlag = 0;
         }

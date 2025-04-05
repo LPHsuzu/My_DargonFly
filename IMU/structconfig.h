@@ -212,9 +212,9 @@ extern FLOAT_ANGLE Att_Angle;    // ATT函数计算出姿态角
 extern RC_TYPE RC_Control;
 
 /*功能键*/
-extern uint8_t Airplane_Enable, Run_Flag;
+extern uint8_t Airplane_Enable, Run_flag;
 extern uint8_t BATT_LEDFlag;
-extern uint8_t WIFI_LEDFlag, WIFI_ControlFlag;
+extern uint8_t WIFI_LEDFlag, WiFi_Controlflag;
 extern uint8_t Altitude_mode;
 extern float Altitude;
 

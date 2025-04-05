@@ -43,10 +43,10 @@ int main(void)
         if (LED_Scan) // 10Hz
         {
             LED_Scan = 0;
-            LED_Run();
-            if (!Airplane_Enable && Run_Flag && !WIFI_LEDFlag)
+            LED5_Run();
+            if (!Airplane_Enable && Run_flag && !WIFI_LEDFlag)
             {
-                RGB_LED_Runing(); // 飞机上锁状态灯
+                RGB_Running(); // 飞机上锁状态灯
             }
             WiFi_OFFON_LED(); // WiFi开关状态灯
             BATT_Alarm_LED(); // 电池低电压报警
