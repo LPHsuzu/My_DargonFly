@@ -1,0 +1,32 @@
+#ifndef MAIN_H
+#define MAIN_H
+
+#include "stdio.h"
+#include "stm32f4xx.h"
+#include "nvicconfig.h"
+#include "structconfig.h"
+#include "delay.h"
+#include "led.h"
+#include "usart.h"
+#include "iic_analog.h"
+#include "spi.h"
+#include "exit.h"
+#include "si24r1.h"
+#include "timer.h"
+#include "motor.h"
+#include "mpu6500.h"
+#include "imu.h"
+#include "fbm320.h"
+#include "pid.h"
+#include "control.h"
+#include "flash.h"
+#include "paramsave.h"
+#include "ANO_DT.h"
+#include "power.h"
+#include "remotedata.h"
+#include "altitude.h"
+#include "spl06.h"
+// #include "openmv.h"
+// #include "ICM20948.h"
+
+#endif

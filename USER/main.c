@@ -1,38 +1,67 @@
-#include "../CMSIS/stm32f4xx.h" // Device header
-#include "led.h"
-#include "usart.h"
-#include "delay.h"
-#include "iic_analog.h"
-#include <stdio.h>
-#include "mpu6500.h"
-#include "spi.h"
-#include "si24r1.h"
+#include "main.h"
 
 int main(void)
 {
-//    uint8_t data = 0;
-
+    NVIC_Config();
     LED_Init();
-//    usart1_init(115200);
     Delay_Init();
-//    MPU6500_Init();
-//    spi_init();
-//    NRF24L01_Init();
+    usart1_init(460800);
+    usart2_init(921600);
+    IIC_Init();
+    TIM4_Init();
+    exti_init();
+    NRF24L01_Init(); // NRF初始化（红）
+    MPU6500_Init();  // MPU9250初始化（绿）
+    spl06_init();    // SPL06初始化(气压计蓝)
+    // FBM320_Init();   // FBM320初始化(气压计蓝)
+    MOTOR_Init();
+    BATT_Init();
+    WiFi_Switch(DISABLE);
+    // OpenMV_Switch(DISABLE); // OpenMV模块开关
+    PID_ReadFlash();     // Flash中的数据读取
+    PidParameter_init(); // PID初始化
+    RGB_LED_Off();
 
     while (1)
     {
-//        GPIO_ResetBits(GPIOB, GPIO_Pin_12);
-//        spi_readwriteByte(0x20 + 0x01);
-//        spi_readwriteByte(0x03);
-//        GPIO_SetBits(GPIOB, GPIO_Pin_12);
+        if (ANO_Scan) // 500Hz
+        {
+            ANO_Scan = 0;
+            ANO_DT_Data_Exchange(); // 更新数据到上位机
+        }
+        if (IMU_Scan) // 100Hz
+        {
+            IMU_Scan = 0;
+            Prepare_Data();                                              // 获取姿态解算所需数据
+            IMUupdate(&Gyr_rad, &Acc_filt, &Att_Angle);                  // 四元数姿态解算
+            Control(&Att_Angle, &Gyr_rad, &RC_Control, Airplane_Enable); // 姿态控制
+            RunTimer_Test();
 
-//        GPIO_ResetBits(GPIOB, GPIO_Pin_12);
-//        spi_readwriteByte(0x01);
-//        data = spi_readwriteByte(0xFF);
-//        GPIO_SetBits(GPIOB, GPIO_Pin_12);
-
-        Delay_ms(500);
-//        printf("NRF data:0x%x\r\n", data);
-        LED5_Run();
+            spl06_update();
+            altitude_get();
+        }
+        if (LED_Scan) // 10Hz
+        {
+            LED_Scan = 0;
+            LED_Run();
+            if (!Airplane_Enable && Run_Flag && !WIFI_LEDFlag)
+            {
+                RGB_LED_Runing(); // 飞机上锁状态灯
+            }
+            WiFi_OFFON_LED(); // WiFi开关状态灯
+            BATT_Alarm_LED(); // 电池低电压报警
+        }
+        if (IRQ_Scan) // 5Hz
+        {
+            IRQ_Scan = 0;
+            NRF_SingalCheck(); // NRF通信检测
+            SendToRemote();    // 发送数据给遥控器
+        }
+        if (Batt_Scan) // 2.5Hz
+        {
+            Batt_Scan = 0;
+            NRF_GetAddr(); // 分配NRF地址
+            LowVoltage_Alarm();
+        }
     }
 }
